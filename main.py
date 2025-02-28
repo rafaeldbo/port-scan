@@ -1,7 +1,9 @@
 import os, sys, argparse, signal
 import json, time
 import socket, ipaddress 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from utils import Console, parse_ip_version, parse_port_request, identify_os_banner
+from multi_threading import multi_thread_pool, get_batches
 
 def signal_handler(sig, frame):
     print("\nCtrl+C identificado, encerrando...")
@@ -15,46 +17,7 @@ N_THREADS = 32
 DEFAULT_VALIDATION_PORT = 135
 
 wkp:dict[str, str] = json.load(open("wellKnowPorts.json"))
-
-class Console:
-    state_whitelist = []
-    wkp = json.load(open("wellKnowPorts.json"))
-    colors = {
-        "red": "\033[91m",
-        "green": "\033[92m",
-        "cyan": "\033[96m",
-        "purple": "\033[95m",
-        "yellow": "\033[93m",
-        "blue": "\033[94m",
-    }
-    state_colors = {
-        "filtrada": "\033[91m",
-        "aberta": "\033[92m",
-        "fechada": "\033[0m",
-        "reset": "\033[0m",
-    }
-    reset_color = "\033[0m"
-    
-    def port_log(port:int, state:str) -> str:
-        if state in Console.state_whitelist:
-            print(f"{Console.state_colors[state]}[TCP] {port:>5} {wkp.get(str(port), ""):<14} {state:>8}{Console.reset_color}")
-
-    def print(text:str, color:str="reset") -> None:
-        color = color.strip().lower()
-        print(f"{Console.colors[color]}{text}{Console.reset_color}") if color in Console.colors else print(text)
-
-parse_ip_version = {
-    4: socket.AF_INET,
-    6: socket.AF_INET6,
-}
-parse_port_request = {
-    21: b"USER anonymous\r\n",
-    25: b"HELO test.com\r\n",
-    80: b"HEAD / HTTP/1.1\r\nHost: anonymous.com\r\n\r\n",
-    110: b"USER anonymous\r\n",
-    143: b"LOGIN anonymous pass\r\n",
-    443: b"HEAD / HTTP/1.1\r\nHost: anonymous.com\r\n\r\n",
-}
+Console.wkp = wkp
             
 def validate_host(ip:str, port:int=DEFAULT_VALIDATION_PORT) -> str:
     try:
@@ -71,6 +34,7 @@ def validate_host(ip:str, port:int=DEFAULT_VALIDATION_PORT) -> str:
     except (PermissionError, ConnectionRefusedError, OSError) as e:
         return (host, family, "ativo")    
             
+
 def scan_port(host:str, port:int, family:int, timeout:float=TIMEOUT) -> None:
     try:
         with socket.socket(family, socket.SOCK_STREAM) as s:
@@ -82,22 +46,6 @@ def scan_port(host:str, port:int, family:int, timeout:float=TIMEOUT) -> None:
     except PermissionError:
         return (port, "filtrada")
     
-
-def identify_os_banner(banner:str) -> str:
-    if banner is None:
-        return None
-    if "windows" in banner or "microsoft" in banner:
-        return "Windows"
-    elif "linux" in banner:
-        return "Linux"
-    elif "debian" in banner:
-        return "Debian"
-    elif "ubuntu" in banner:
-        return "Ubuntu"
-    elif "centos" in banner:
-        return "CentOS"
-    elif "macos" in banner:
-        return "MacOS"
 
 def banner_grabbing(ip:str, port:int, family:int) -> str|None:
     try:
@@ -112,16 +60,6 @@ def banner_grabbing(ip:str, port:int, family:int) -> str|None:
     finally:
         s.close()
         
-def get_batches(dataset:list, n_batches:int) -> list[list]:
-    return (dataset[i:i+n_batches] for i in range(0, len(dataset), n_batches))
-
-def multi_thread_pool(func, arg_list: list[tuple], n_threads: int) -> list:
-    results = []
-    with ThreadPoolExecutor(max_workers=n_threads) as executor:
-        futures = [executor.submit(func, *args) for args in arg_list]
-        for future in as_completed(futures):
-            results.append(future.result())
-    return results
 
 def main():
     parser = argparse.ArgumentParser(

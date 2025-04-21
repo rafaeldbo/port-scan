@@ -2,8 +2,8 @@ import os, sys, argparse, signal
 import json, time
 import socket, ipaddress 
 
-from utils import Console, parse_ip_version, parse_port_request, identify_os_banner
-from multi_threading import multi_thread_pool, get_batches
+from .utils import Console, parse_ip_version, parse_port_request, identify_os_banner
+from .multi_threading import multi_thread_pool, get_batches
 
 def signal_handler(sig, frame):
     print("\nCtrl+C identificado, encerrando...")
@@ -16,7 +16,8 @@ TIMEOUT = 3 if os.name == "nt" else 1
 N_THREADS = 32
 DEFAULT_VALIDATION_PORT = 135
 
-wkp:dict[str, str] = json.load(open("wellKnowPorts.json"))
+PATH = os.path.dirname(os.path.abspath(__file__))
+wkp:dict[str, str] = json.load(open(os.path.join(PATH, "wellKnowPorts.json")))
 Console.wkp = wkp
             
 def validate_host(ip:str, port:int=DEFAULT_VALIDATION_PORT) -> str:
@@ -54,6 +55,7 @@ def banner_grabbing(ip:str, port:int, family:int) -> str|None:
         s.connect((ip, port))
         s.send(parse_port_request.get(port, b""))
         banner = s.recv(1024)
+        print(banner.decode().strip().lower())
         return banner.decode().strip().lower()
     except Exception as e:
         pass

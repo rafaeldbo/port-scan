@@ -11,10 +11,20 @@
 - Nomeação de portas `Well Know Ports`
 - Identificação do estado da porta
 
+## **Como Instalar**
+Faça a instalação diretamente em seu terminal por meio do `pip`
+
+```
+pip install git+https://github.com/rafaeldbo/port-scan
+```
+⚠️ **AVISO** ⚠️
+
+Este programa foi desenvolvido utilizando **Python 3.13**, por isso, pode não funcionar corretamente para versões anteriores,
+
 ## **Como Utilizar**
 Esse programa funciona apenas por linha de comando, utilize o comando a baixo para executar:
 ```
-$ python3 main.py [-h] [-a | -p PORTS | -r RANGE | -k] [--open] [--os] [-n N_THREADS] [-t TIMEOUT] [-v VALIDATION_PORTS] ip
+$ portscan [-h] [-a | -p PORTS | -r RANGE | -k] [--open] [--os] [-n N_THREADS] [-t TIMEOUT] [-v VALIDATION_PORTS] ip
 ```
 ### **Parâmetros**
 -  `ip`: é o único parâmetro obrigatório e corresponde ao ip que será escaneado. Esse ip pode ser tando `IPv4` quanto `IPv6`. É possível fornecer, também, por meio desse parâmetro um `ip de rede`, com isso o programa irá escanear toda a rede correspondente ao `ip de rede` fornecido.

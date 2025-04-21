@@ -29,7 +29,7 @@ $ portscan [-h] [-a | -p PORTS | -r RANGE | -k] [--open] [--os] [-n N_THREADS] [
 ### **Parâmetros**
 -  `ip`: é o único parâmetro obrigatório e corresponde ao ip que será escaneado. Esse ip pode ser tando `IPv4` quanto `IPv6`. É possível fornecer, também, por meio desse parâmetro um `ip de rede`, com isso o programa irá escanear toda a rede correspondente ao `ip de rede` fornecido.
         
-            EX.: python3 main.py -k 192.168.0.0/24
+            EX.: portscan -k 192.168.0.0/24
 
 ### **Flags e Argumentos Opcionais**
 - Para informar quais portas devem ser escaneadas utilize *apenas uma* das flags abaixo:
@@ -37,13 +37,13 @@ $ portscan [-h] [-a | -p PORTS | -r RANGE | -k] [--open] [--os] [-n N_THREADS] [
     - `-a` ou `--all`: escaneia todas as portas (de 0 a 65535, inclusive)
     - `-p` ou `--ports`: permite escolher uma lista de portas (cada porta separada por uma vírgula) para serem escaneadas
         ```
-            EX.: python3 main.py -p 22,80,443 192.168.0.2
+            EX.: portscan -p 22,80,443 192.168.0.2
         ```
     - `-r` ou `--range`: permite escolher um range de portas a ser escaneado, informando o range no formato {primeira}-{útima}
         ```
-            EX.: python3 main.py -r 0-1024 192.168.0.2
+            EX.: portscan -r 0-1024 192.168.0.2
         ```   
-    - `-k`: escaneia todas as `Well Know Ports` registradas no arquivo [wellKnowPorts.json](./wellKnowPorts.json)
+    - `-k`: escaneia todas as `Well Know Ports` registradas no arquivo [wellKnowPorts.json](./app/wellKnowPorts.json)
 
 - `--open`: instrui o programa a mostrar apenas as mensagens informando quais portas estão *abertas* (ocultando as mensagens das portas fechadas ou filtradas)
 - `--os`: instrui o programa a tentar identificar qual é o sistema operacional do **host alvo** utilizando a tecnica de `Banner Grabbing`. Nessa tecnica, uma requisição falta será enviada para todas as portas ativas do host esperando que a resposta possua algum **banner** que indique seu sistema operacional

@@ -55,7 +55,6 @@ def banner_grabbing(ip:str, port:int, family:int) -> str|None:
         s.connect((ip, port))
         s.send(parse_port_request.get(port, b""))
         banner = s.recv(1024)
-        print(banner.decode().strip().lower())
         return banner.decode().strip().lower()
     except Exception as e:
         pass

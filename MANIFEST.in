@@ -1,1 +1,1 @@
-include app/wellKnowPorts.json
+include portscan/wellKnowPorts.json

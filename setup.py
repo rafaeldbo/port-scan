@@ -8,7 +8,7 @@ setup(
     install_requires=[],
     entry_points={
         'console_scripts': [
-            'portscan=app.main:main',
+            'portscan=portscan.main:main',
         ],
     },
 )

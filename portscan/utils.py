@@ -21,7 +21,8 @@ class Console:
     
     def port_log(port:int, state:str) -> str:
         if state in Console.state_whitelist:
-            print(f"{Console.state_colors[state]}[TCP] {port:>5} {Console.wkp.get(str(port), ""):<14} {state:>8}{Console.reset_color}")
+            port_name = Console.wkp.get(str(port), "")
+            print(f"{Console.state_colors[state]}[TCP] {port:>5} {port_name:<14} {state:>8}{Console.reset_color}")
 
     def print(text:str, color:str="reset") -> None:
         color = color.strip().lower()
